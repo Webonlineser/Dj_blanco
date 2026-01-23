@@ -12,7 +12,7 @@
 
 
 .img_vertical_1{
-  width: 300px !important ;
+  width: 300px ;
   border-radius: 5%;
   margin-top: 30px;
 
@@ -108,12 +108,6 @@
 }
 
 
-.img_vertical_1{
-  width: 340px !important ;
-  border-radius: 5%;
-  margin-top: 30px;
-
-}
 
 
 body{
@@ -172,6 +166,7 @@ h1{
  border-radius: 2%;
   box-shadow: 0 4px 10px black;
   background-color: rgba(0, 0, 0, 0.4);
+  width: 360px;
  
   
 }
@@ -283,7 +278,7 @@ h1{
 .comments-section {
 
   padding: 80px 20px;
-
+  width: 320px;
   margin: 50px;
   
 }
@@ -358,10 +353,10 @@ h1{
   border:1px solid black;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
 background-color: #cfd6e6;
-width: 380px;
+width: 330px;
 height: 100%;
 border-radius: 20px;
-padding: 20px;
+padding: 10px;
 }
 
 
