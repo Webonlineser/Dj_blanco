@@ -1,0 +1,278 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Bebas Neue", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+
+
+
+}
+
+
+body{
+ background-color: #1F3358FF;  
+ display: flex;
+ flex-direction: column;
+ justify-content: center;
+ align-items: center;
+ 
+}
+
+
+h1{
+    color:white;
+
+}
+
+
+
+
+.circulo_title{
+    display: flex;
+    justify-content: center;
+    align-items: center; /* ← ESTA es la clave */
+    margin-top: 30px;
+    text-align: center;
+    border: 1px solid white;
+    height: 50px;
+    width: 280px;
+    border-radius: 40px;
+    
+}
+
+
+
+
+.box_img_1{
+    margin-top: 20px;
+
+}
+
+.img_1{
+    width: 350px;
+    border-radius: 10px;
+}
+
+.box_sobremi{
+     max-width: 90%;
+  margin: 40px auto;
+  text-align: left;
+  
+}
+
+
+.box_sobremi p {
+    text-align: center;
+    font-size: 1rem;          /* cómodo para celu */
+  line-height: 1.6;         /* respiración */
+  letter-spacing: 0.2px;
+  margin-bottom: 1.2rem;
+}
+
+
+
+/* cards*/
+
+
+.services {
+  width: 100%;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* CARD */
+.service-card {
+  border-radius: 22px;
+  overflow: hidden;
+  background: linear-gradient(
+    145deg,
+    rgba(255,255,255,0.06),
+    rgba(255,255,255,0.02)
+  );
+  backdrop-filter: blur(4px);
+  box-shadow:
+    0 10px 25px rgba(0,0,0,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+/* IMAGEN */
+.card-image {
+  width: 100%;
+  height: 250px;
+  overflow: hidden;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* CONTENIDO */
+.card-content {
+  padding: 20px;
+  text-align: left;
+}
+
+.card-content h3 {
+  font-size: 1.1rem;
+  letter-spacing: 0.6px;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.card-content p {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  opacity: 0.9;
+}
+
+
+
+.icon_contactos{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-top: 50px;
+    margin-bottom: 50px;
+
+}
+
+.a_circle {
+  width: 50px;          /* el tamaño que quieras */
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;     /* 👈 recorta la imagen */
+  display: inline-block; /* 👈 CLAVE */
+  border:1px solid #F9CC11;
+   box-shadow: 0 4px 10px black;
+
+}
+
+.a_circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;    /* centra y recorta */
+  display: block;       /* elimina espacios */
+}
+
+
+.comments-section {
+  background-color: #1F3358;
+  padding: 80px 20px;
+}
+
+.comments-container {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.comments-title {
+  color: #ffffff;
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 40px;
+  letter-spacing: 0.5px;
+}
+
+.comments-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 30px;
+  border-radius: 16px;
+  backdrop-filter: blur(6px);
+}
+
+.comments-form input,
+.comments-form textarea {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  padding: 14px 16px;
+  color: #ffffff;
+  font-size: 1rem;
+  outline: none;
+}
+
+.comments-form input::placeholder,
+.comments-form textarea::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.comments-form input:focus,
+.comments-form textarea:focus {
+  border-color: #ffffff;
+}
+
+.comments-form button {
+  margin-top: 10px;
+  padding: 14px;
+  background: linear-gradient(135deg, #ffffff, #cfd6e6);
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.comments-form button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  
+}
+
+
+.box_comentarios{
+
+  margin-top: 30px;
+  border:1px solid black;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+background-color: #cfd6e6;
+width: 300px;
+height: 100%;
+border-radius: 20px;
+padding: 20px;
+}
+
+
+
+
+
+.comments-list p {
+  background-color: #1a1a1a;
+  color: #fff;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1px solid #444;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+.comments-list p strong {
+  display: block;
+  color: #00e0ff; /* nombre en color */
+  margin-bottom: 5px;
+  font-size: 1.1em;
+}
+
+
+.contador-visitas {
+  display: inline-block;        /* que no ocupe toda la línea */
+  background-color: #00e0ff;    /* color de fondo llamativo */
+  color: #1a1a1a;               /* texto oscuro */
+  font-weight: bold;
+  padding: 8px 16px;            /* espacio dentro del recuadro */
+  border-radius: 12px;           /* bordes redondeados */
+  border: 1px solid #444;       /* borde sutil */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* sombra ligera */
+  font-family: 'Arial', sans-serif;
+  font-size: 1.1em;
+  margin: 10px 0;               /* separación del resto del contenido */
+}

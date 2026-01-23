@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <title>Dj Blanco</title>
+</head>
+<body>
+
+
+<div class="circulo_title">
+    <h1>DJ BLANCO</h1>
+    
+</div>  
+
+<h2>ILUMINAcION Y SONIDO PROFESIONAL</h2>
+
+<div class="box_img_1">
+    <img class="img_1" src="./asset/banner_1.jpeg" alt="">
+</div>
+
+
+<div class="box_sobremi" >
+<p>
+    Mi camino en la música comenzó muy joven, a los 14/15 años, impulsado por una pasión genuina por el sonido, el espectáculo y la energía que se genera en cada evento. Con el paso del tiempo, esa pasión se transformó en un proyecto sólido y profesional, construido a base de experiencia, constancia y compromiso.
+
+A lo largo de más de dos décadas de trayectoria, fui creciendo junto a cada evento, aprendiendo a leer al público, a cuidar los detalles y a entender que cada celebración es única. Ese recorrido está respaldado por cientos de eventos realizados, clientes satisfechos y reseñas positivas que avalan cada presentación.
+
+Hoy trabajo de manera integral en la musicalización y producción técnica de eventos, con una mirada cercana y personalizada. Me involucro en cada etapa del proceso, escuchando las ideas, entendiendo las expectativas y acompañando hasta el último minuto del evento para asegurar un resultado prolijo, profesional y memorable.
+
+La responsabilidad, la puntualidad y el compromiso son pilares fundamentales de mi forma de trabajar. Cada show es una oportunidad para crear una experiencia que no solo se escuche, sino que también se viva y se sienta.
+</p>
+</div>
+
+
+
+<section class="services">
+
+  <article class="service-card">
+    <div class="card-image">
+      <!-- acá va la imagen -->
+      <img src="./asset/foto_2.jpeg" alt="DJ en evento">
+    </div>
+
+    <div class="card-content">
+      <h3>DJ Profesional</h3>
+      <p>
+        Musicalización para fiestas sociales, eventos privados, empresariales y
+        celebraciones especiales. Sets adaptados al público y al clima del evento.
+      </p>
+    </div>
+  </article>
+
+  <article class="service-card">
+    <div class="card-image">
+      <img src="./asset/foto_1.jpeg" alt="Sonido profesional">
+    </div>
+
+    <div class="card-content">
+      <h3>Sonido Profesional</h3>
+      <p>
+        Equipos de alta potencia y fidelidad, configurados según el espacio para
+        garantizar claridad, impacto y una experiencia sonora de primer nivel.
+      </p>
+    </div>
+  </article>
+
+
+  <article class="service-card">
+    <div class="card-image">
+      <img src="./asset/foto_5.jpeg" alt="Iluminación escénica">
+    </div>
+    <div class="card-content">
+      <h3>Iluminación Escénica</h3>
+      <p>
+        Iluminación decorativa, robótica, láser y efectos visuales que transforman
+        el espacio y potencian cada momento del evento.
+      </p>
+    </div>
+  </article>
+
+  <article class="service-card">
+    <div class="card-image">
+      <img src="./asset/foto_4.jpeg" alt="Efectos especiales">
+    </div>
+    <div class="card-content">
+      <h3>Efectos Especiales</h3>
+      <p>
+        Humo, nieve, espuma y efectos de impacto visual que elevan la experiencia
+        y generan un verdadero clima de show.
+      </p>
+    </div>
+  </article>
+
+</section>
+
+
+   <section class="box_contacto">
+        <h1>Contacto/Booking</h1>
+        <p>Reservas, contrataciones y consultas</p>
+    <div class="icon_contactos">
+        <a class="a_circle" target="_blank" href="https://www.instagram.com/p/DR7quDpDpkF/"><img src="./asset/icons/instagram.jpg" alt=""></a>
+        <a class="a_circle" target="_blank" href="https://www.tiktok.com/@gvrriidoo?_r=1&_t=ZN-92sNGR3rNfa"><img src="./asset/icons/facebook.jpg" alt=""></a>
+        <a class="a_circle" target="_blank" href="https://youtube.com/@gvrrido?si=WmOOchPfXJh_5PnP"><img src="./asset/icons/wsp.jpg" alt=""></a>
+    </div>
+    <p>Booking abierto · Contacto directo</p>
+    </section>
+<div class="box_comentarios"><h2>Dejame tu mensaje!!</h2>
+<div class="comments-list">
+      <!-- acá después se insertan los comentarios desde Firebase -->
+    </div>
+</div>
+
+    <section class="comments-section">
+  <div class="comments-container">
+
+    <h2 class="comments-title">Dejá tu comentario</h2>
+
+    <form class="comments-form">
+      <input 
+        type="text" 
+        placeholder="Tu nombre"
+        required
+      />
+
+      <textarea 
+        placeholder="Escribí tu mensaje..."
+        rows="4"
+        required
+      ></textarea>
+
+      <button type="submit">Enviar comentario</button>
+    </form>
+
+    
+  </div>
+</section>
+
+
+
+
+<div class="contador-visitas">
+  <span id="total-visitas">0</span> visitas
+</div>
+
+
+
+</body>
+
+<script type="module" src="/main.js"></script>
+<script type="module" src="/contador.js"></script>
+
+
+</html>
