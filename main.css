@@ -12,7 +12,7 @@
 
 
 .img_vertical_1{
-  width: 340px !important ;
+  width: 300px !important ;
   border-radius: 5%;
   margin-top: 30px;
 
@@ -21,7 +21,7 @@
 
 .custom-carousel {
   position: relative;
-  width: 340px;
+  width: 320px;
   max-width: 1200px;
   margin: auto;
   overflow: hidden;
@@ -290,7 +290,7 @@ h1{
 
 .comments-container {
   max-width: 800px;
-  width: 380px;
+  width: 300px;
   margin: 0 auto;
 }
 
