@@ -1,7 +1,10 @@
-// 🔹 1️⃣ Importaciones desde CDN
+// 🔹 1️⃣ Importaciones desde CDN 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
-import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { 
+  getFirestore, collection, addDoc, onSnapshot, serverTimestamp, 
+  query, orderBy, getDocs, startAfter, limit 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // 🔹 2️⃣ Configuración de Firebase
 const firebaseConfig = {
@@ -25,17 +28,78 @@ const nombreInput = form.querySelector("input[type=text]");
 const mensajeInput = form.querySelector("textarea");
 const listaComentarios = document.querySelector(".comments-list");
 
-// 🔹 5️⃣ Escuchar el envío del formulario y guardar en Firestore
+// 🔹 5️⃣ Variables para paginación
+let lastVisible = null;
+const pageSize = 10;
+let loading = false;
+
+// 🔹 6️⃣ Función para renderizar un comentario
+function renderComment(doc) {
+  const c = doc.data();
+  const p = document.createElement("p");
+  p.innerHTML = `<strong>${c.nombre}</strong><br>${c.mensaje}`;
+  listaComentarios.appendChild(p);
+}
+
+// 🔹 7️⃣ Función para cargar comentarios con paginación
+async function loadComments(reset = false) {
+  if (loading) return;
+  loading = true;
+
+  if (reset) {
+    listaComentarios.innerHTML = "";
+    lastVisible = null;
+  }
+
+  let q;
+  if (lastVisible) {
+    q = query(
+      collection(db, "comentarios"),
+      orderBy("timestamp", "desc"),
+      startAfter(lastVisible),
+      limit(pageSize)
+    );
+  } else {
+    q = query(
+      collection(db, "comentarios"),
+      orderBy("timestamp", "desc"),
+      limit(pageSize)
+    );
+  }
+
+  const snapshot = await getDocs(q);
+
+  snapshot.forEach(doc => renderComment(doc));
+
+  if (snapshot.docs.length > 0) {
+    lastVisible = snapshot.docs[snapshot.docs.length - 1];
+  }
+
+  // Mostrar u ocultar botón "Ver más"
+  const btn = document.querySelector("#ver-mas-btn");
+  if (snapshot.docs.length === pageSize) {
+    if (!btn) {
+      const btnNew = document.createElement("button");
+      btnNew.id = "ver-mas-btn";
+      btnNew.textContent = "Ver más comentarios";
+      btnNew.style.marginTop = "10px";
+      btnNew.addEventListener("click", () => loadComments());
+      listaComentarios.parentElement.appendChild(btnNew);
+    }
+  } else if (btn) {
+    btn.remove();
+  }
+
+  loading = false;
+}
+
+// 🔹 8️⃣ Escuchar el envío del formulario y agregar comentario
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const nombre = nombreInput.value.trim();
   const mensaje = mensajeInput.value.trim();
-
-  if (!nombre || !mensaje) {
-    alert("Completa todo");
-    return;
-  }
+  if (!nombre || !mensaje) return alert("Completa todo");
 
   try {
     await addDoc(collection(db, "comentarios"), {
@@ -44,25 +108,100 @@ form.addEventListener("submit", async (e) => {
       timestamp: serverTimestamp()
     });
 
-    mensajeInput.value = ""; // limpiar campo
-  } catch (error) {
-    console.error("Error guardando comentario:", error);
+    // Limpiar campos
+    nombreInput.value = "";
+    mensajeInput.value = "";
+
+    // Recargar comentarios desde el inicio
+    loadComments(true);
+  } catch (err) {
+    console.error("Error guardando comentario:", err);
   }
 });
 
-// 🔹 6️⃣ Leer comentarios en tiempo real y mostrarlos
-const q = query(collection(db, "comentarios"), orderBy("timestamp", "desc"));
+// 🔹 9️⃣ Cargar los primeros comentarios al iniciar
+loadComments();
 
-onSnapshot(q, (snapshot) => {
-  listaComentarios.innerHTML = ""; // limpiar lista antes de renderizar
 
-  snapshot.forEach(doc => {
-    const c = doc.data();
-    const p = document.createElement("p");
 
-    // Nombre en negrita arriba, mensaje debajo, sin dos puntos
-    p.innerHTML = `<strong>${c.nombre}</strong><br>${c.mensaje}`;
 
-    listaComentarios.appendChild(p);
+const audio = document.getElementById("bg-audio");
+
+// Intentar reproducir al cargar la página
+window.addEventListener("load", () => {
+  audio.play().catch(() => {
+    // Si el navegador bloquea, esperamos a la interacción del usuario
+    const resumeAudio = () => {
+      audio.play();
+      // Quitamos el listener una vez que se reproduzca
+      window.removeEventListener("click", resumeAudio);
+      window.removeEventListener("scroll", resumeAudio);
+    };
+    window.addEventListener("click", resumeAudio);
+    window.addEventListener("scroll", resumeAudio);
   });
 });
+
+
+
+const toggleBtn = document.getElementById("audio-toggle");
+
+toggleBtn.addEventListener("click", () => {
+  if (audio.paused) {
+    audio.play();
+  } else {
+    audio.pause();
+  }
+});
+
+
+
+
+
+
+const carousel = document.getElementById("customCarousel");
+  const slides = carousel.querySelectorAll(".cc-slide");
+  const track = carousel.querySelector(".cc-slides");
+  const prevBtn = carousel.querySelector(".prev");
+  const nextBtn = carousel.querySelector(".next");
+  const dotsContainer = carousel.querySelector(".cc-dots");
+
+  let index = 0;
+
+  // Crear dots
+  slides.forEach((_, i) => {
+    const dot = document.createElement("div");
+    dot.classList.add("cc-dot");
+    if (i === 0) dot.classList.add("active");
+    dot.addEventListener("click", () => goToSlide(i));
+    dotsContainer.appendChild(dot);
+  });
+
+  const dots = dotsContainer.querySelectorAll(".cc-dot");
+
+  function updateCarousel() {
+    track.style.transform = `translateX(-${index * 100}%)`;
+    dots.forEach(d => d.classList.remove("active"));
+    dots[index].classList.add("active");
+  }
+
+  function goToSlide(i) {
+    index = i;
+    updateCarousel();
+  }
+
+  nextBtn.addEventListener("click", () => {
+    index = (index + 1) % slides.length;
+    updateCarousel();
+  });
+
+  prevBtn.addEventListener("click", () => {
+    index = (index - 1 + slides.length) % slides.length;
+    updateCarousel();
+  });
+
+  // Auto slide (opcional)
+  setInterval(() => {
+    index = (index + 1) % slides.length;
+    updateCarousel();
+  }, 5000);
