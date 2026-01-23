@@ -21,7 +21,7 @@
 
 .custom-carousel {
   position: relative;
-  width: 400px;
+  width: 340px;
   max-width: 1200px;
   margin: auto;
   overflow: hidden;
@@ -411,7 +411,7 @@ padding: 20px;
 
 .custom-carousel {
   position: relative;
-  width: 600px;
+  width: 300px;
   max-width: 1200px;
   margin: auto;
   overflow: hidden;
