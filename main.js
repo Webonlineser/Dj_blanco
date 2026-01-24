@@ -2,9 +2,11 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
 import { 
-  getFirestore, collection, addDoc, onSnapshot, serverTimestamp, 
-  query, orderBy, getDocs, startAfter, limit 
+  getFirestore, collection, addDoc, serverTimestamp, 
+  query, orderBy, getDocs, startAfter, limit,
+  deleteDoc, doc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
 
 // 🔹 2️⃣ Configuración de Firebase
 const firebaseConfig = {
@@ -27,6 +29,14 @@ const form = document.querySelector(".comments-form");
 const nombreInput = form.querySelector("input[type=text]");
 const mensajeInput = form.querySelector("textarea");
 const listaComentarios = document.querySelector(".comments-list");
+const PASSWORD_ADMIN = "Luna07022022"; // cambiala
+let isAdmin = false;
+
+const btnLogin = document.getElementById("btn-login");
+const modalLogin = document.getElementById("login-modal");
+const inputPassword = document.getElementById("login-password");
+const btnConfirmLogin = document.getElementById("login-confirm");
+
 
 // 🔹 5️⃣ Variables para paginación
 let lastVisible = null;
@@ -34,10 +44,27 @@ const pageSize = 10;
 let loading = false;
 
 // 🔹 6️⃣ Función para renderizar un comentario
-function renderComment(doc) {
-  const c = doc.data();
+function renderComment(docSnap) {
+  const c = docSnap.data();
   const p = document.createElement("p");
+
   p.innerHTML = `<strong>${c.nombre}</strong><br>${c.mensaje}`;
+
+  if (isAdmin) {
+    const del = document.createElement("span");
+    del.textContent = "✖";
+    del.classList.add("delete-comment");
+
+    del.addEventListener("click", async () => {
+      if (confirm("¿Borrar comentario?")) {
+        await deleteDoc(doc(db, "comentarios", docSnap.id));
+        loadComments(true);
+      }
+    });
+
+    p.appendChild(del);
+  }
+
   listaComentarios.appendChild(p);
 }
 
@@ -118,6 +145,23 @@ form.addEventListener("submit", async (e) => {
     console.error("Error guardando comentario:", err);
   }
 });
+
+
+
+btnLogin.addEventListener("click", () => {
+  modalLogin.classList.remove("login-hidden");
+});
+
+btnConfirmLogin.addEventListener("click", () => {
+  if (inputPassword.value === PASSWORD_ADMIN) {
+    isAdmin = true;
+    modalLogin.classList.add("login-hidden");
+    loadComments(true);
+  } else {
+    alert("Contraseña incorrecta");
+  }
+});
+
 
 // 🔹 9️⃣ Cargar los primeros comentarios al iniciar
 loadComments();

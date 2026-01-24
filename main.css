@@ -2,7 +2,6 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Bebas Neue", sans-serif;
     font-weight: 400;
     font-style: normal;
 
@@ -11,8 +10,83 @@
 }
 
 
+#btn-login{
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  background-color: #00e0ff;
+  color: #1a1a1a;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 9999;
+}
+
+/* Modal */
+#login-modal{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+.login-hidden{
+  display: none !important;
+}
+
+.login-box{
+  background: #1a1a1a;
+  padding: 25px;
+  border-radius: 14px;
+  width: 280px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+.login-box input{
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: none;
+}
+
+/* Cruz borrar */
+.delete-comment{
+  float: right;
+  cursor: pointer;
+  color: #ff4d4d;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+
+#ver-mas-btn{
+  background-color: #00e0ff;
+  color:white;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+
+p{
+    font-family: "Roboto", sans-serif;
+
+}
+
+h3{
+    font-family: "Bebas Neue", sans-serif;
+
+}
+
+
 .img_vertical_1{
-  width: 280px ;
+  width: 300px ;
   border-radius: 5%;
   margin-top: 30px;
 
@@ -175,12 +249,13 @@ h1{
 .img_banner{
  width: 340px;
  border-radius: 5%;
-   box-shadow: 0 4px 10px black;
+ box-shadow: 0 4px 10px black;
 
 }
 
 
 .box_sobremi p {
+  font-family: "Roboto", sans-serif;
   text-align: center;
   font-size: 1rem;         
   line-height: 1.6;         
@@ -278,7 +353,7 @@ h1{
 .comments-section {
 
   padding: 80px 20px;
-  width: 320px;
+width: 320px;
   margin: 50px;
   
 }
@@ -356,7 +431,7 @@ background-color: #cfd6e6;
 width: 330px;
 height: 100%;
 border-radius: 20px;
-padding: 10px;
+padding: 20px;
 }
 
 
@@ -510,6 +585,11 @@ custom-carousel {
    =============================== */
 @media (min-width: 1024px) {
 
+
+
+h3{ 
+  font-size:25px;
+}
 
   .custom-carousel {
   position: relative;
