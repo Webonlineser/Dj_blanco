@@ -191,8 +191,17 @@ async function loadComments(reset = false) {
   }
 
   let q = lastVisible
-    ? query(collection(db, "comentarios"), orderBy("timestamp","desc"), startAfter(lastVisible), limit(pageSize))
-    : query(collection(db, "comentarios"), orderBy("timestamp","desc"), limit(pageSize));
+    ? query(
+        collection(db, "comentarios"),
+        orderBy("timestamp", "desc"),
+        startAfter(lastVisible),
+        limit(pageSize)
+      )
+    : query(
+        collection(db, "comentarios"),
+        orderBy("timestamp", "desc"),
+        limit(pageSize)
+      );
 
   const snapshot = await getDocs(q);
 
@@ -202,8 +211,32 @@ async function loadComments(reset = false) {
     lastVisible = snapshot.docs[snapshot.docs.length - 1];
   }
 
+  // =========================
+  // 🔘 BOTÓN VER MÁS
+  // =========================
+  let btn = document.getElementById("ver-mas-btn");
+
+  if (snapshot.docs.length === pageSize) {
+    if (!btn) {
+      btn = document.createElement("button");
+      btn.id = "ver-mas-btn";
+      btn.textContent = "Ver más comentarios";
+      btn.style.marginTop = "15px";
+      btn.style.cursor = "pointer";
+
+      btn.addEventListener("click", () => loadComments());
+
+      listaComentarios.parentElement.appendChild(btn);
+    }
+  } else {
+    if (btn) btn.remove();
+  }
+
   loading = false;
 }
+
+
+
 
 // 🔹 8️⃣ Enviar comentario
 form.addEventListener("submit", async (e) => {
@@ -290,3 +323,28 @@ if (carousel) {
 
   setInterval(() => { i = (i+1)%slides.length; update(); }, 5000);
 }
+
+
+
+const videos = document.querySelectorAll(".video");
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    const video = entry.target;
+
+    if (entry.intersectionRatio >= 0.5) {
+      video.muted = true; // 🔥 asegurar autoplay
+      video.play().catch(err => {
+        console.log("Autoplay bloqueado:", err);
+      });
+    } else {
+      video.pause();
+    }
+  });
+}, {
+  threshold: 0.5
+});
+
+videos.forEach(video => {
+  observer.observe(video);
+});
