@@ -1,5 +1,5 @@
 // 🔹 1️⃣ Importaciones desde CDN 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
 import { 
   getFirestore, collection, addDoc, serverTimestamp, 
@@ -7,7 +7,7 @@ import {
   deleteDoc, doc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// 🔹 2️⃣ Configuración de Firebase
+// 🔹 2️⃣ Configuración Firebase (REAL)
 const firebaseConfig = {
   apiKey: "AIzaSyBpcuOfOqBghIpzajGNorVwAIsKoBXjXKo",
   authDomain: "agenda-pacientes-2cd22.firebaseapp.com",
@@ -18,9 +18,12 @@ const firebaseConfig = {
   measurementId: "G-C3ZLF7XB8H"
 };
 
-// 🔹 3️⃣ Inicializar Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+// 🔹 3️⃣ Inicializar Firebase SIN duplicar
+const app = getApps().length === 0 
+  ? initializeApp(firebaseConfig) 
+  : getApps()[0];
+
+getAnalytics(app);
 const db = getFirestore(app);
 
 // 🔹 4️⃣ DOM
@@ -28,6 +31,8 @@ const form = document.querySelector(".comments-form");
 const nombreInput = form.querySelector("input[type=text]");
 const mensajeInput = form.querySelector("textarea");
 const listaComentarios = document.querySelector(".comments-list");
+
+const audio = document.getElementById("bg-audio");
 
 const PASSWORD_ADMIN = "Luna07022022";
 let isAdmin = false;
@@ -51,17 +56,16 @@ async function responderComentario(id, mensaje) {
   });
 }
 
-// 🔹 6️⃣ Render comentario
+// 🔹 Render comentario COMPLETO
 function renderComment(docSnap) {
 
   const c = docSnap.data();
   const cont = document.createElement("div");
   cont.classList.add("comment");
 
-  let fecha = "Sin fecha";
-  if (c.timestamp?.seconds) {
-    fecha = new Date(c.timestamp.seconds * 1000).toLocaleString();
-  }
+  let fecha = c.timestamp?.seconds
+    ? new Date(c.timestamp.seconds * 1000).toLocaleString()
+    : "Sin fecha";
 
   const nombre = document.createElement("strong");
   nombre.textContent = c.nombre;
@@ -74,6 +78,7 @@ function renderComment(docSnap) {
 
   cont.append(nombre, fechaEl, mensaje);
 
+  // ❌ borrar comentario
   const del = document.createElement("span");
   del.textContent = "✖";
   del.classList.add("delete-comment");
@@ -81,6 +86,7 @@ function renderComment(docSnap) {
 
   del.addEventListener("click", async () => {
     if (!isAdmin) return;
+
     if (confirm("¿Borrar comentario?")) {
       await deleteDoc(doc(db, "comentarios", docSnap.id));
       loadComments(true);
@@ -89,17 +95,21 @@ function renderComment(docSnap) {
 
   cont.appendChild(del);
 
+  // 💬 responder
   const btnReply = document.createElement("button");
   btnReply.textContent = "Responder";
   btnReply.style.display = isAdmin ? "inline-block" : "none";
+
   cont.appendChild(btnReply);
 
   const replyForm = document.createElement("div");
   replyForm.style.display = "none";
+
   replyForm.innerHTML = `
     <textarea placeholder="Respuesta"></textarea>
     <button>Enviar</button>
   `;
+
   cont.appendChild(replyForm);
 
   btnReply.addEventListener("click", () => {
@@ -115,6 +125,7 @@ function renderComment(docSnap) {
     loadComments(true);
   });
 
+  // 📥 RESPUESTAS
   const respuestasBox = document.createElement("div");
   respuestasBox.classList.add("respuestas");
   cont.appendChild(respuestasBox);
@@ -145,6 +156,7 @@ function renderComment(docSnap) {
 
       delR.addEventListener("click", async () => {
         if (!isAdmin) return;
+
         if (confirm("¿Borrar respuesta?")) {
           await deleteDoc(doc(db, "comentarios", docSnap.id, "respuestas", d.id));
           loadComments(true);
@@ -160,7 +172,7 @@ function renderComment(docSnap) {
   listaComentarios.appendChild(cont);
 }
 
-// 🔹 7️⃣ Cargar comentarios
+// 🔹 Cargar comentarios
 async function loadComments(reset = false) {
   if (loading) return;
   loading = true;
@@ -171,34 +183,30 @@ async function loadComments(reset = false) {
   }
 
   let q = lastVisible
-    ? query(collection(db, "comentarios"), orderBy("timestamp","desc"), startAfter(lastVisible), limit(pageSize))
-    : query(collection(db, "comentarios"), orderBy("timestamp","desc"), limit(pageSize));
+    ? query(
+        collection(db, "comentarios"),
+        orderBy("timestamp", "desc"),
+        startAfter(lastVisible),
+        limit(pageSize)
+      )
+    : query(
+        collection(db, "comentarios"),
+        orderBy("timestamp", "desc"),
+        limit(pageSize)
+      );
 
   const snapshot = await getDocs(q);
+
   snapshot.forEach(doc => renderComment(doc));
 
   if (snapshot.docs.length > 0) {
     lastVisible = snapshot.docs[snapshot.docs.length - 1];
   }
 
-  let btn = document.getElementById("ver-mas-btn");
-
-  if (snapshot.docs.length === pageSize) {
-    if (!btn) {
-      btn = document.createElement("button");
-      btn.id = "ver-mas-btn";
-      btn.textContent = "Ver más comentarios";
-      btn.addEventListener("click", () => loadComments());
-      listaComentarios.parentElement.appendChild(btn);
-    }
-  } else {
-    if (btn) btn.remove();
-  }
-
   loading = false;
 }
 
-// 🔹 8️⃣ Enviar comentario
+// 🔹 Enviar comentario
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -213,13 +221,11 @@ form.addEventListener("submit", async (e) => {
     timestamp: serverTimestamp()
   });
 
-  nombreInput.value = "";
-  mensajeInput.value = "";
-
+  form.reset();
   loadComments(true);
 });
 
-// 🔹 9️⃣ Login admin
+// 🔹 Login admin
 btnLogin.addEventListener("click", () => {
   modalLogin.classList.remove("login-hidden");
 });
@@ -228,71 +234,49 @@ btnConfirmLogin.addEventListener("click", () => {
   if (inputPassword.value === PASSWORD_ADMIN) {
     isAdmin = true;
     modalLogin.classList.add("login-hidden");
-    listaComentarios.innerHTML = "";
-    lastVisible = null;
-    setTimeout(() => loadComments(true), 50);
+    loadComments(true);
   } else {
     alert("Contraseña incorrecta");
   }
 });
 
-// 🔹 🔟 Init
+// 🔹 Init
 loadComments();
 
-// 🔊 AUDIO
-const audio = document.getElementById("bg-audio");
-
+// 🔊 Toggle audio manual
 document.getElementById("audio-toggle").addEventListener("click", () => {
   audio.paused ? audio.play() : audio.pause();
 });
 
-// 🎠 CAROUSEL
-const carousel = document.getElementById("customCarousel");
-if (carousel) {
-  const slides = carousel.querySelectorAll(".cc-slide");
-  const track = carousel.querySelector(".cc-slides");
-  const prev = carousel.querySelector(".prev");
-  const next = carousel.querySelector(".next");
-
-  let i = 0;
-
-  function update() {
-    track.style.transform = `translateX(-${i * 100}%)`;
-  }
-
-  next.onclick = () => { i = (i+1)%slides.length; update(); };
-  prev.onclick = () => { i = (i-1+slides.length)%slides.length; update(); };
-
-  setInterval(() => { i = (i+1)%slides.length; update(); }, 5000);
-}
-
 // =========================
-// 🎬 VIDEO + AUDIO FINAL FIX (MOBILE OK)
+// 🎬 VIDEO + AUDIO FINAL (SCROLL ACTIVA SONIDO)
 // =========================
 
 const videos = document.querySelectorAll(".video");
 
 let unlocked = false;
 
-// desbloqueo real mobile
-const unlockAudio = () => {
+// 🔥 SCROLL = interacción real
+const unlockOnScroll = () => {
   unlocked = true;
 
-  videos.forEach(v => {
-    v.muted = false;
-    v.play().then(() => {
-      v.pause();
-      v.currentTime = 0;
-    }).catch(() => {});
+  videos.forEach(video => {
+    if (!video.paused) {
+      video.muted = false;
+
+      video.play().catch(() => {
+        video.muted = true;
+        video.play();
+      });
+    }
   });
 
-  window.removeEventListener("scroll", unlockAudio);
-  window.removeEventListener("touchstart", unlockAudio);
+  window.removeEventListener("scroll", unlockOnScroll);
 };
 
-window.addEventListener("scroll", unlockAudio, { passive: true });
-window.addEventListener("touchstart", unlockAudio, { passive: true });
+window.addEventListener("scroll", unlockOnScroll, { once: true });
 
+// 👀 Observer
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     const video = entry.target;
@@ -303,7 +287,7 @@ const observer = new IntersectionObserver((entries) => {
 
       video.play().catch(() => {
         video.muted = true;
-        video.play().catch(() => {});
+        video.play();
       });
     }
   });
@@ -312,10 +296,17 @@ const observer = new IntersectionObserver((entries) => {
 videos.forEach(video => {
   observer.observe(video);
 
+  // 🎵 cuando termina → MP3
   video.addEventListener("ended", () => {
     if (!unlocked) return;
 
     audio.currentTime = 0;
     audio.play().catch(() => {});
+  });
+
+  // 🔊 click manual
+  video.addEventListener("click", () => {
+    video.muted = false;
+    video.play();
   });
 });
