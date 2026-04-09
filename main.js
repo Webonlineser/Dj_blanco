@@ -42,7 +42,7 @@ let lastVisible = null;
 const pageSize = 10;
 let loading = false;
 
-// 🔥 RESPONDER (SIEMPRE Dj Blanco)
+// 🔥 RESPONDER
 async function responderComentario(id, mensaje) {
   await addDoc(collection(db, "comentarios", id, "respuestas"), {
     nombre: "Dj Blanco",
@@ -58,7 +58,6 @@ function renderComment(docSnap) {
   const cont = document.createElement("div");
   cont.classList.add("comment");
 
-  // 🗓️ Fecha
   let fecha = "Sin fecha";
   if (c.timestamp?.seconds) {
     fecha = new Date(c.timestamp.seconds * 1000).toLocaleString();
@@ -75,18 +74,13 @@ function renderComment(docSnap) {
 
   cont.append(nombre, fechaEl, mensaje);
 
-  // =========================
-  // ❌ BORRAR COMENTARIO
-  // =========================
   const del = document.createElement("span");
   del.textContent = "✖";
   del.classList.add("delete-comment");
-
   del.style.display = isAdmin ? "inline-block" : "none";
 
   del.addEventListener("click", async () => {
     if (!isAdmin) return;
-
     if (confirm("¿Borrar comentario?")) {
       await deleteDoc(doc(db, "comentarios", docSnap.id));
       loadComments(true);
@@ -95,23 +89,17 @@ function renderComment(docSnap) {
 
   cont.appendChild(del);
 
-  // =========================
-  // 💬 RESPONDER
-  // =========================
   const btnReply = document.createElement("button");
   btnReply.textContent = "Responder";
   btnReply.style.display = isAdmin ? "inline-block" : "none";
-
   cont.appendChild(btnReply);
 
   const replyForm = document.createElement("div");
   replyForm.style.display = "none";
-
   replyForm.innerHTML = `
     <textarea placeholder="Respuesta"></textarea>
     <button>Enviar</button>
   `;
-
   cont.appendChild(replyForm);
 
   btnReply.addEventListener("click", () => {
@@ -127,9 +115,6 @@ function renderComment(docSnap) {
     loadComments(true);
   });
 
-  // =========================
-  // 📥 RESPUESTAS
-  // =========================
   const respuestasBox = document.createElement("div");
   respuestasBox.classList.add("respuestas");
   cont.appendChild(respuestasBox);
@@ -153,16 +138,13 @@ function renderComment(docSnap) {
         <p>${r.mensaje}</p>
       `;
 
-      // ❌ BORRAR RESPUESTA (CLASE NUEVA)
       const delR = document.createElement("span");
       delR.textContent = "✖";
       delR.classList.add("delete-reply");
-
       delR.style.display = isAdmin ? "inline-block" : "none";
 
       delR.addEventListener("click", async () => {
         if (!isAdmin) return;
-
         if (confirm("¿Borrar respuesta?")) {
           await deleteDoc(doc(db, "comentarios", docSnap.id, "respuestas", d.id));
           loadComments(true);
@@ -170,13 +152,11 @@ function renderComment(docSnap) {
       });
 
       div.appendChild(delR);
-
       respuestasBox.appendChild(div);
     });
   }
 
   cargarRespuestas();
-
   listaComentarios.appendChild(cont);
 }
 
@@ -191,29 +171,16 @@ async function loadComments(reset = false) {
   }
 
   let q = lastVisible
-    ? query(
-        collection(db, "comentarios"),
-        orderBy("timestamp", "desc"),
-        startAfter(lastVisible),
-        limit(pageSize)
-      )
-    : query(
-        collection(db, "comentarios"),
-        orderBy("timestamp", "desc"),
-        limit(pageSize)
-      );
+    ? query(collection(db, "comentarios"), orderBy("timestamp","desc"), startAfter(lastVisible), limit(pageSize))
+    : query(collection(db, "comentarios"), orderBy("timestamp","desc"), limit(pageSize));
 
   const snapshot = await getDocs(q);
-
   snapshot.forEach(doc => renderComment(doc));
 
   if (snapshot.docs.length > 0) {
     lastVisible = snapshot.docs[snapshot.docs.length - 1];
   }
 
-  // =========================
-  // 🔘 BOTÓN VER MÁS
-  // =========================
   let btn = document.getElementById("ver-mas-btn");
 
   if (snapshot.docs.length === pageSize) {
@@ -221,11 +188,7 @@ async function loadComments(reset = false) {
       btn = document.createElement("button");
       btn.id = "ver-mas-btn";
       btn.textContent = "Ver más comentarios";
-      btn.style.marginTop = "15px";
-      btn.style.cursor = "pointer";
-
       btn.addEventListener("click", () => loadComments());
-
       listaComentarios.parentElement.appendChild(btn);
     }
   } else {
@@ -234,9 +197,6 @@ async function loadComments(reset = false) {
 
   loading = false;
 }
-
-
-
 
 // 🔹 8️⃣ Enviar comentario
 form.addEventListener("submit", async (e) => {
@@ -266,19 +226,11 @@ btnLogin.addEventListener("click", () => {
 
 btnConfirmLogin.addEventListener("click", () => {
   if (inputPassword.value === PASSWORD_ADMIN) {
-
     isAdmin = true;
-
     modalLogin.classList.add("login-hidden");
-
-    // 🔥 reset total
     listaComentarios.innerHTML = "";
     lastVisible = null;
-
-    setTimeout(() => {
-      loadComments(true);
-    }, 50);
-
+    setTimeout(() => loadComments(true), 50);
   } else {
     alert("Contraseña incorrecta");
   }
@@ -289,16 +241,6 @@ loadComments();
 
 // 🔊 AUDIO
 const audio = document.getElementById("bg-audio");
-
-window.addEventListener("load", () => {
-  audio.play().catch(() => {
-    const resume = () => {
-      audio.play();
-      window.removeEventListener("click", resume);
-    };
-    window.addEventListener("click", resume);
-  });
-});
 
 document.getElementById("audio-toggle").addEventListener("click", () => {
   audio.paused ? audio.play() : audio.pause();
@@ -324,7 +266,32 @@ if (carousel) {
   setInterval(() => { i = (i+1)%slides.length; update(); }, 5000);
 }
 
+// =========================
+// 🎬 VIDEO + AUDIO FINAL FIX (MOBILE OK)
+// =========================
+
 const videos = document.querySelectorAll(".video");
+
+let unlocked = false;
+
+// desbloqueo real mobile
+const unlockAudio = () => {
+  unlocked = true;
+
+  videos.forEach(v => {
+    v.muted = false;
+    v.play().then(() => {
+      v.pause();
+      v.currentTime = 0;
+    }).catch(() => {});
+  });
+
+  window.removeEventListener("scroll", unlockAudio);
+  window.removeEventListener("touchstart", unlockAudio);
+};
+
+window.addEventListener("scroll", unlockAudio, { passive: true });
+window.addEventListener("touchstart", unlockAudio, { passive: true });
 
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
@@ -332,27 +299,23 @@ const observer = new IntersectionObserver((entries) => {
 
     if (entry.intersectionRatio >= 0.5 && video.paused) {
 
-      // 🔊 intentar con sonido
-      video.muted = false;
+      video.muted = !unlocked;
 
       video.play().catch(() => {
         video.muted = true;
         video.play().catch(() => {});
       });
-
     }
   });
 }, { threshold: 0.5 });
 
-videos.forEach(video => observer.observe(video));
-
-
-// 🔊 Activar sonido al hacer click
 videos.forEach(video => {
-  video.addEventListener("click", () => {
-    video.muted = false;
-    video.play();
+  observer.observe(video);
+
+  video.addEventListener("ended", () => {
+    if (!unlocked) return;
+
+    audio.currentTime = 0;
+    audio.play().catch(() => {});
   });
 });
-
-
