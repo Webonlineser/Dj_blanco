@@ -324,27 +324,35 @@ if (carousel) {
   setInterval(() => { i = (i+1)%slides.length; update(); }, 5000);
 }
 
-
-
 const videos = document.querySelectorAll(".video");
 
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     const video = entry.target;
 
-    if (entry.intersectionRatio >= 0.5) {
-      video.muted = true; // 🔥 asegurar autoplay
-      video.play().catch(err => {
-        console.log("Autoplay bloqueado:", err);
+    if (entry.intersectionRatio >= 0.5 && video.paused) {
+
+      // 🔊 intentar con sonido
+      video.muted = false;
+
+      video.play().catch(() => {
+        video.muted = true;
+        video.play().catch(() => {});
       });
-    } else {
-      video.pause();
+
     }
   });
-}, {
-  threshold: 0.5
+}, { threshold: 0.5 });
+
+videos.forEach(video => observer.observe(video));
+
+
+// 🔊 Activar sonido al hacer click
+videos.forEach(video => {
+  video.addEventListener("click", () => {
+    video.muted = false;
+    video.play();
+  });
 });
 
-videos.forEach(video => {
-  observer.observe(video);
-});
+

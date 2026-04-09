@@ -265,6 +265,10 @@ h1{
 
 
 .box_img_1{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
     margin-top: 10px;
     width: 100%;
     padding-left:15px;
@@ -642,7 +646,7 @@ custom-carousel {
   }
 
   .img_1 {
-    width: 450px;
+    width: 75%;
   }
 
   .box_sobremi {
@@ -720,15 +724,20 @@ h3{
 }
 
 .box_sobremi {
-  flex: 2;
+  flex: 0;
+  margin-left: 100px;
 }
 
 .box_video {
   flex: 1;
-
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.video{
+  width: 70%;
 }
 
   .custom-carousel {
@@ -750,6 +759,7 @@ h3{
 
 
 .box_sobremi{
+  width: 50%;
   display: flex;
   flex-direction: column;
   height: max-content;
@@ -790,11 +800,7 @@ height: max-content;
 
   .box_sobremi {
     max-width: 70%;
-    margin: 60px auto;
-  }
-
-  .box_sobremi p {
-
+ 
   }
 
   .services {
