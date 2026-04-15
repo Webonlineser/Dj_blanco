@@ -35,16 +35,27 @@ letter-spacing: 1px;
 
 /* 🔹 item */
 .red-item {
+  margin-top: 5px;
+  margin-bottom: 5px;
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 14px 16px;
   border-radius: 14px;
-  background: #111;
-  color: #fff;
+ background-color: white;
+  color: black;
   text-decoration: none;
   transition: all 0.3s ease;
   border: 1px solid rgba(255,255,255,0.05);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  padding: 10px;
+  
+}
+
+.circulo_red span{
+font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+color: black;
+
 }
 
 /* 🔹 icono */
@@ -56,30 +67,37 @@ letter-spacing: 1px;
 /* 🔹 texto */
 .red-item span {
   font-size: 0.95rem;
-  color: #ccc;
+  color: black;
+  font-family: "roboto";
 }
 
 /* 🔥 hover general */
 .red-item:hover {
   transform: translateX(6px);
-  background: #1a1a1a;
+
 }
 
 /* 🎨 colores por red */
-.red-item.instagram:hover {
-  background: #e1306c;
+.red-item span:hover {
+  color: #e1306c;
+
 }
 
-.red-item.whatsapp:hover {
-  background: #25d366;
+.red-item span:hover {
+  color: #25d366;
 }
 
-.red-item.mail:hover {
-  background: #444;
+.red-item span:hover {
+  color: #444;
 }
 
-.red-item.google:hover {
-  background: #4285F4;
+.red-item span:hover {
+  color: #4285F4;
+}
+.red-item svg {
+  width: 45px;
+  height: 45px;
+  margin-left: 5px;
 }
 
 .comment p {
@@ -91,6 +109,21 @@ letter-spacing: 1px;
   transform: scale(1.02);
   color:white;
 
+}
+
+.circulo_red{
+  margin: 10px;
+  pading:-5px;
+  border-radius: 50%;
+  width: 45px;
+  overflow: hidden;
+  position: relative;
+}
+
+.circulo_red img {
+  width: 100%;
+
+ 
 }
 
 strong{
