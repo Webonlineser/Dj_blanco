@@ -1,13 +1,13 @@
-// 🔹 1️⃣ Importaciones desde CDN 
+// 🔹 1️⃣ Importaciones desde CDN
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
-import { 
-  getFirestore, collection, addDoc, serverTimestamp, 
+import {
+  getFirestore, collection, addDoc, serverTimestamp,
   query, orderBy, getDocs, startAfter, limit,
   deleteDoc, doc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// 🔹 2️⃣ Configuración Firebase (REAL)
+// 🔹 2️⃣ Configuración Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBpcuOfOqBghIpzajGNorVwAIsKoBXjXKo",
   authDomain: "agenda-pacientes-2cd22.firebaseapp.com",
@@ -18,9 +18,9 @@ const firebaseConfig = {
   measurementId: "G-C3ZLF7XB8H"
 };
 
-// 🔹 3️⃣ Inicializar Firebase SIN duplicar
-const app = getApps().length === 0 
-  ? initializeApp(firebaseConfig) 
+// 🔹 3️⃣ Inicializar Firebase
+const app = getApps().length === 0
+  ? initializeApp(firebaseConfig)
   : getApps()[0];
 
 getAnalytics(app);
@@ -31,6 +31,9 @@ const form = document.querySelector(".comments-form");
 const nombreInput = form.querySelector("input[type=text]");
 const mensajeInput = form.querySelector("textarea");
 const listaComentarios = document.querySelector(".comments-list");
+
+const btnVerMas = document.getElementById("btn-ver-mas");
+const btnVerMenos = document.getElementById("btn-ver-menos");
 
 const audio = document.getElementById("bg-audio");
 
@@ -56,7 +59,7 @@ async function responderComentario(id, mensaje) {
   });
 }
 
-// 🔹 Render comentario COMPLETO
+// 🔹 Render comentario
 function renderComment(docSnap) {
 
   const c = docSnap.data();
@@ -152,24 +155,32 @@ function renderComment(docSnap) {
       const delR = document.createElement("span");
       delR.textContent = "✖";
       delR.classList.add("delete-reply");
-      delR.style.display = isAdmin ? "inline-block" : "none";
 
-      delR.addEventListener("click", async () => {
-        if (!isAdmin) return;
+      // 🔥 SOLO ADMIN
+      if (isAdmin) {
+        delR.style.display = "inline-block";
 
-        if (confirm("¿Borrar respuesta?")) {
-          await deleteDoc(doc(db, "comentarios", docSnap.id, "respuestas", d.id));
-          loadComments(true);
-        }
-      });
+        delR.addEventListener("click", async () => {
+          if (confirm("¿Borrar respuesta?")) {
+            await deleteDoc(doc(db, "comentarios", docSnap.id, "respuestas", d.id));
+            loadComments(true);
+          }
+        });
 
-      div.appendChild(delR);
+        div.appendChild(delR);
+      }
+
       respuestasBox.appendChild(div);
     });
   }
 
   cargarRespuestas();
   listaComentarios.appendChild(cont);
+  observerComments.observe(cont);
+  
+setTimeout(() => {
+  cont.classList.add("show");
+}, 10);
 }
 
 // 🔹 Cargar comentarios
@@ -203,8 +214,36 @@ async function loadComments(reset = false) {
     lastVisible = snapshot.docs[snapshot.docs.length - 1];
   }
 
+  if (lastVisible) {
+    const nextQuery = query(
+      collection(db, "comentarios"),
+      orderBy("timestamp", "desc"),
+      startAfter(lastVisible),
+      limit(1)
+    );
+
+    const nextSnap = await getDocs(nextQuery);
+
+    if (nextSnap.empty) {
+      btnVerMas.style.display = "none";
+    } else {
+      btnVerMas.style.display = "inline-block";
+    }
+  }
+
   loading = false;
 }
+
+// 🔹 BOTONES
+btnVerMas.addEventListener("click", async () => {
+  await loadComments(false);
+  btnVerMenos.style.display = "inline-block";
+});
+
+btnVerMenos.addEventListener("click", async () => {
+  await loadComments(true);
+  btnVerMenos.style.display = "none";
+});
 
 // 🔹 Enviar comentario
 form.addEventListener("submit", async (e) => {
@@ -243,27 +282,21 @@ btnConfirmLogin.addEventListener("click", () => {
 // 🔹 Init
 loadComments();
 
-// 🔊 Toggle audio manual
+// 🔊 Audio toggle
 document.getElementById("audio-toggle").addEventListener("click", () => {
   audio.paused ? audio.play() : audio.pause();
 });
 
-// =========================
-// 🎬 VIDEO + AUDIO FINAL (SCROLL ACTIVA SONIDO)
-// =========================
-
+// 🎬 VIDEO + AUDIO
 const videos = document.querySelectorAll(".video");
-
 let unlocked = false;
 
-// 🔥 SCROLL = interacción real
 const unlockOnScroll = () => {
   unlocked = true;
 
   videos.forEach(video => {
     if (!video.paused) {
       video.muted = false;
-
       video.play().catch(() => {
         video.muted = true;
         video.play();
@@ -276,13 +309,11 @@ const unlockOnScroll = () => {
 
 window.addEventListener("scroll", unlockOnScroll, { once: true });
 
-// 👀 Observer
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     const video = entry.target;
 
     if (entry.intersectionRatio >= 0.5 && video.paused) {
-
       video.muted = !unlocked;
 
       video.play().catch(() => {
@@ -296,7 +327,6 @@ const observer = new IntersectionObserver((entries) => {
 videos.forEach(video => {
   observer.observe(video);
 
-  // 🎵 cuando termina → MP3
   video.addEventListener("ended", () => {
     if (!unlocked) return;
 
@@ -304,9 +334,53 @@ videos.forEach(video => {
     audio.play().catch(() => {});
   });
 
-  // 🔊 click manual
   video.addEventListener("click", () => {
     video.muted = false;
     video.play();
   });
 });
+
+// 🔍 DEBUG
+async function debugComentarios() {
+  const snap = await getDocs(collection(db, "comentarios"));
+
+  console.log("TOTAL EN DB:", snap.size);
+
+  snap.forEach(doc => {
+    const data = doc.data();
+
+    if (!data.timestamp) {
+      console.log("❌ SIN TIMESTAMP:", doc.id, data);
+    }
+  });
+}
+
+debugComentarios();
+
+
+const observerComments = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add("show");
+      observerComments.unobserve(entry.target); // opcional (solo anima una vez)
+    }
+  });
+}, {
+  threshold: 0.2
+});
+
+
+const slides = document.querySelectorAll(".cc-slide");
+let index = 0;
+
+function showSlide(i) {
+  slides.forEach(slide => slide.classList.remove("active"));
+  slides[i].classList.add("active");
+}
+
+// autoplay
+setInterval(() => {
+  index++;
+  if (index >= slides.length) index = 0;
+  showSlide(index);
+}, 4000);
