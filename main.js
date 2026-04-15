@@ -1,3 +1,24 @@
+document.addEventListener("DOMContentLoaded", () => {
+
+  const elementos = document.querySelectorAll(".scroll-anim");
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+
+      if (entry.isIntersecting) {
+        entry.target.classList.add("show");
+      }
+
+    });
+  }, {
+    threshold: 0.15
+  });
+
+  elementos.forEach(el => observer.observe(el));
+
+});
+
+
 // 🔹 1️⃣ Importaciones desde CDN
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
@@ -384,3 +405,4 @@ setInterval(() => {
   if (index >= slides.length) index = 0;
   showSlide(index);
 }, 4000);
+
